@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vad-apis
+  labels:
+    app: vad-apis
+spec:
+  replicas: {{ .Values.appReplicas }}
+  selector:
+    matchLabels:
+      app: vad-apis
+  template:
+    metadata:
+      labels:
+        app: vad-apis
+    spec:
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector:
+        kubernetes.io/os: windows
+      containers:
+      - name: vad-apis
+        image: {{ .Values.repository }}/vad-apis:{{ .Values.tagVersion }}
+        volumeMounts:
+        - name: all-in-one
+          mountPath: "/config-volume"
+          readOnly: true
+        ports:
+        - containerPort: 443
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " c:\\config-volume\\Postinstall\\run.ps1 ;"             
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " Import-Module C:\\PS\\FakeCmdlet.psm1 -Force ; Z:\\SocleTI\\Deploy\\App\\CreateDnsApacheIIS-4.42.0.0.ps1 -gDeploy $True -gJsonFileName 'API.json' -gFirstPortBindingValue 443 ;"
+              - " c:\\PS\\AppendIPAddress.ps1 -pAutoTestPathFile 'D:\\web\\TPVWEB\\WS.VAD\\AutoTest\\WS_VAD.txt' ;"
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " c:\\PS\\AppendIPAddress.ps1 -pAutoTestPathFile 'D:\\web\\TPVWEB\\WS.VAD.DATA\\AutoTest\\WS_VAD_DATA.txt' ;"
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " c:\\PS\\AppendIPAddress.ps1 -pAutoTestPathFile 'D:\\web\\TPVWEB\\WS.VAD.MEDIA\\AutoTest\\WS_VAD_MEDIA.txt' ;"
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " c:\\PS\\AppendIPAddress.ps1 -pAutoTestPathFile 'D:\\web\\TPVWEB\\WS.VAD.EQUIPMENT\\AutoTest\\WS_VAD_EQUIPMENT.txt' ;"
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " Z:\\SocleTI\\Deploy\\Media\\deploy-2.33.0.0.ps1 $True 'API.json' 'reinstall' ;"              
+              - "c:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+              - -command
+              - " Z:\\SocleTI\\Deploy\\Media\\deploy-2.33.0.0.ps1 $True 'API.json' 'reinstall' ;"
+
+      volumes:
+        - name: all-in-one
+          projected:
+            sources:
+            - configMap:
+                name: ticketing-root-ca.crt
+                items:
+                  - key: ca.crt
+                    path: ca/ca.crt            
+            - configMap:
+                name: pod-postinstall
+                items:
+                  - key: run.ps1
+                    path: Postinstall/run.ps1            
+            - configMap:
+                name: platform-config
+                items:
+                  - key: Accounts.xml
+                    path: Config/Accounts.xml           
+                  - key: config.json
+                    path: Config/config.json           
+                  - key: Fmk.xml
+                    path: Config/Fmk.xml           
+                  - key: Oracle.xml
+                    path: Config/Oracle.xml           
+                  - key: Deploy.Acc.Accounts.xml
+                    path: Config/Deploy/Acc/Accounts.xml          
+                  - key: Deploy.Acc.Fmk.xml
+                    path: Config/Deploy/Acc/Fmk.xml          
+                  - key: Deploy.Acc.Oracle.xml
+                    path: Config/Deploy/Acc/Oracle.xml          
+                  - key: Deploy.Acc.Windows.xml
+                    path: Config/Deploy/Acc/Windows.xml          

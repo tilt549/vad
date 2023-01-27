@@ -1,0 +1,100 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vad-apis-ws-vad
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/rewrite-target: /WS_VAD/$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vad-apis
+            port:
+              number: 443
+        path: /WS_VAD(/|$)(.*)
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    secretName: ticketing-wildcard-cert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vad-apis-ws-vad-data
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/rewrite-target: /WS_VAD_DATA/$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vad-apis
+            port:
+              number: 443
+        path: /WS_VAD_DATA(/|$)(.*)
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    secretName: ticketing-wildcard-cert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vad-apis-ws-vad-media
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/rewrite-target: /WS_VAD_MEDIA/$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vad-apis
+            port:
+              number: 443
+        path: /WS_VAD_MEDIA(/|$)(.*)
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    secretName: ticketing-wildcard-cert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vad-apis-ws-vad-equipment
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "https"
+    nginx.ingress.kubernetes.io/rewrite-target: /WS_VAD_EQUIPMENT/$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vad-apis
+            port:
+              number: 443
+        path: /WS_VAD_EQUIPMENT(/|$)(.*)
+        pathType: Prefix
+  tls:
+  - hosts:
+    - sbil-api-k8s{{ .Values.ticketing.platform }}.{{ .Values.ticketing.dns.domain }}
+    secretName: ticketing-wildcard-cert
+

@@ -1,0 +1,56 @@
+namespace: default
+  
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      serviceType: ClusterIP
+      appReplicas: 1
+      ticketing:
+        dns:
+          server: 192.168.100.104
+          domain: atls2.intg
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: valm
+  helm:
+    values:
+      serviceType: ClusterIP
+      appReplicas: 1
+      ticketing:
+        platform: -t
+        dns:
+          server: 172.24.10.43
+          domain: kube1.valm
+  clusterSelector:
+    matchLabels:
+      env: valm
+
+- name: test
+  helm:
+    values:
+      serviceType: ClusterIP
+      appReplicas: 1
+      ticketing:
+        platform: -t
+        dns:
+          server: 172.24.202.5
+          domain: labo1.valm
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: ClusterIP
+      appReplicas: 3
+      ticketing:
+        dns:
+          server: 192.168.100.104
+          domain: kube1.prod
+  clusterSelector:
+    matchLabels:
+      env: prod
