@@ -1,5 +1,5 @@
 repository: registry.labo1.infra/root/labo1
-tagVersion: 1.0.1
+tagVersion: 1.0.0
 replication: true
 appReplicas: 1
 serviceType: ClusterIP
