@@ -1,5 +1,5 @@
 apiVersion: v2
 name: vad-apis
 description: Sample application
-version: 4.2.5
-appVersion: 4.2.5
+version: latest
+appVersion: latest
